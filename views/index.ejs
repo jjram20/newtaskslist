@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <title>Fast tasks</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <script src="/js/bootstrap.js"></script>
+  </head>
+
+  <style>
+    body {
+      background-image: linear-gradient(cyan, blue);
+    }
+    
+    .center {
+      margin: 0 auto;
+    }
+
+    #card_header {
+      background-color: blueviolet;
+      color: white;
+    }
+
+    #card_form {
+      width: 35%;
+      height: 50%
+    }
+
+    #form_tab_content {
+      padding: 10px;
+    }
+  </style>
+
+  <body>
+    <div class="card center" id="card_form">
+      <div class="card-header text-center">
+        <h1>FastTasks</h1>
+      </div>
+      
+      <div class="card-body">
+        <ul class="nav nav-tabs" id="tab_forms" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login_tab" data-bs-toggle="tab" data-bs-target="#login_tab_pane" type="button" role="tab" aria-controls="login_tab_pane" aria-selected="true">Log in</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="signup_tab" data-bs-toggle="tab" data-bs-target="#signup_tab_pane" type="button" role="tab" aria-controls="signup_tab_pane" aria-selected="false">Sign up</button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="form_tab_content">
+          <div class="tab-pane fade show active" id="login_tab_pane" role="tabpanel" aria-labelledby="login_tab" tabindex="0">
+            <form action="/login_user" method="post">
+              <div class="mb-3">
+                <label for="email_login" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email_login" name="email_login" aria-describedby="emailHelp" required>
+              </div>
+              <div class="mb-3">
+                <label for="password_login" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password_login" name="password_login" required>
+              </div>
+              <button type="submit" id="login_button" class="btn btn-primary">Log in</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="signup_tab_pane" id="signup_tab_pane" role="tabpanel" aria-labelledby="signup_tab" tabindex="0">
+          <form action="/create_user" method="post">
+            <div class="mb-3">
+              <label for="email_signup" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email_signup" name="email_login" aria-describedby="emailHelp" required>
+            </div>
+            <div class="mb-3">
+              <label for="password_signup_1" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password_signup_1" name="password_signup_1" minlength="10" required>
+            </div>
+            <div class="mb-3">
+              <label for="password_signup_2" class="form-label">Repeat password</label>
+              <input type="password" class="form-control" id="password_signup_2" name="password_signup_2" minlength="10" required>
+            </div>
+            <button type="submit" id="signup_button" class="btn btn-primary">Sign up</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
