@@ -1,9 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const app = express();
 const prisma = new PrismaClient();
+
+let saltRounds = 20;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,37 +22,64 @@ app.get("/get_all_users", async (req, res) => {
 })
 
 app.post("/create_user", async (req, res) => {
-    let new_password = req.body.password;
-    let new_email = req.body.email;
-    let new_login = password.split("@")[0];
-    let new_user = await prisma.user.create({
-        data: {
-            login: new_login,
-            email: new_email,
-            password: new_password
+    let message = "";
+    let new_password = req.body.password_signup_1;
+    let new_email = req.body.email_signup;
+    console.log(new_email);
+    let new_login = new_email.split("@")[0];
+
+    let users = await prisma.user.findMany({
+        where: {
+            email: new_email
         }
     })
 
+    console.log("Users");
+    console.log(users);
+
+    if (users.length > 0) {
+        message = "Correo ya fue registrado previamente";
+    } else {
+        // Encrypt password
+        let epassword = await bcrypt.hash(new_password, saltRounds);
+        console.log("Password encriptado");
+        console.log(epassword);
+        let new_user = await prisma.user.create({
+            data: {
+                login: new_login,
+                email: new_email,
+                password: epassword
+            }
+        });
+
+        message = "Usuario creado";
+    }
+
     console.log("User created");
-    res.redirect("/");
+
+    let res_json = {
+        "alert": message
+    }
+
+    res.status(200).json(res_json);
+    //res.redirect("/");
 })
 
 app.post("/login_user", async (req, res) => {
-    console.log("INICIO REQ");
-    console.log(req.body);
-    console.log("FIN REQ");
     let password_login = req.body.password_login;
     let email_login = req.body.email_login;
     let user = await prisma.user.findUnique({
         where: {
             email: email_login,
-            password: password_login
         }
     })
-
+ 
     console.log(user);
 
-    if (user) {
+    let hash_password = user.password;
+    //let user_validated = bcrypt.compare(password_login, hash_password);
+
+    if (user_validated) {
         console.log("Validated user");
         res.redirect("/list_tasks");
     } else {
@@ -61,6 +91,22 @@ app.post("/login_user", async (req, res) => {
 app.get("/list_tasks", (req, res) => {
     res.send("Access allowed");
 })
+
+/*app.get("/logout", (req, res) => {
+
+})
+
+app.post("/new_task", (req, res) => {
+
+})
+
+app.post("/edit_task", (req, res) => {
+
+})
+
+app.delete("/delete_task", (req, res) => {
+     
+})*/
 
 app.listen(3000, () => {
     console.log("Listening port 3000");
