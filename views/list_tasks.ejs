@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>Lista de tareas</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <script src="/js/bootstrap.js"></script>
+  </head>
+
+  <style>
+  </style>
+
+  <body>
+    Hola <%= usuario %><br>
+    <ul>
+      <% for (let i=0; i < items.length; i++) { %>
+        <li><%= items[i] %></li>
+      <% } %>
+    </ul>
+  </body>
+</html>

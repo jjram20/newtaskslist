@@ -31,6 +31,20 @@
   </style>
 
   <body>
+    <% if (notification != "") { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= notification %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
+    <% if (notification_error != "") { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= notification_error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% } %>
+
     <div class="card center" id="card_form">
       <div class="card-header text-center">
         <h1>FastTasks</h1>

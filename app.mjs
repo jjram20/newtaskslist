@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import flash from "connect-flash";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -10,10 +13,26 @@ let saltRounds = 20;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(flash());
+
+app.use(cookieParser("SecretStringForSession"));
+app.use(session({
+    secret: "SecretStringForSession",
+    cookie: { maxAge: 60000 },
+    resave: true,
+    saveUninitialized: true
+}));
+
 app.set("view engine", "ejs");
 
 app.get("/", (req, res) => {
-    res.render("index");
+    let notification_success = req.flash("notification");
+    let notification_error = req.flash("notification_error")
+    res.render("index", {
+        notification: notification_success,
+        notification_error: notification_error
+    });
 })
 
 app.get("/get_all_users", async (req, res) => {
@@ -25,17 +44,14 @@ app.post("/create_user", async (req, res) => {
     let message = "";
     let new_password = req.body.password_signup_1;
     let new_email = req.body.email_signup;
-    console.log(new_email);
     let new_login = new_email.split("@")[0];
-
+    
+    // Verify if email was registered previously
     let users = await prisma.user.findMany({
         where: {
             email: new_email
         }
     })
-
-    console.log("Users");
-    console.log(users);
 
     if (users.length > 0) {
         message = "Correo ya fue registrado previamente";
@@ -55,14 +71,9 @@ app.post("/create_user", async (req, res) => {
         message = "Usuario creado";
     }
 
-    console.log("User created");
-
-    let res_json = {
-        "alert": message
-    }
-
-    res.status(200).json(res_json);
-    //res.redirect("/");
+    // Send flash notification
+    req.flash("notification", message);
+    res.redirect("/");
 })
 
 app.post("/login_user", async (req, res) => {
@@ -73,23 +84,27 @@ app.post("/login_user", async (req, res) => {
             email: email_login,
         }
     })
- 
-    console.log(user);
 
     let hash_password = user.password;
-    //let user_validated = bcrypt.compare(password_login, hash_password);
+    let user_validated = await bcrypt.compare(password_login, hash_password);
 
     if (user_validated) {
         console.log("Validated user");
         res.redirect("/list_tasks");
     } else {
         console.log("Access not allowed");
+        req.flash("notification_error", "Usuario no validado")
         res.redirect("/")
     }
 })
 
 app.get("/list_tasks", (req, res) => {
-    res.send("Access allowed");
+    let usuario = "Usuario";
+    let items = ["Item1", "Item2", "Item3"]
+    res.render("list_tasks", {
+        usuario: usuario,
+        items: items
+    });
 })
 
 /*app.get("/logout", (req, res) => {
